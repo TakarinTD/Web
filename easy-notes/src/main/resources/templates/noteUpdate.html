@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Update Note</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.css}"/>
+</head>
+<body>
+<h1>Update Note:</h1>
+<form action="#"
+      th:action="@{/noteUpdate/{id}(id=${note.getId()})}" th:object="${note}" method="post">
+    Title:
+    <input type="text" th:field="*{title}"/>
+    <br/>
+    <br/>
+    Content:
+    <input type="text" th:field="*{content}"/>
+    <br/>
+    <br/>
+    <button type="submit" onClick="return confirm('Update?')">Update</button>
+    <button type="button" onclick="history.back()">Back</button>
+</form>
+</body>
+
+</html>
