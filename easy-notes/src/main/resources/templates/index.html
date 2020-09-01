@@ -1,13 +1,100 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Welcome</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.css}"/>
+    <meta charset="UTF-8">
+    <title>NOTE</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.min.js}" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/main.js}" src="../static/js/main.js"></script>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
 </head>
 <body>
-<h1>Welcome</h1>
-<a th:href="@{/notesList}">Note List</a>
+<h1>NOTE</h1>
+<div class="container">
+    <button class="btn btn-success nBtn">New</button>
+    <div class="card">
+        <div class="card-block">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>TITLE</th>
+                    <th>CONTENT</th>
+                    <th>CREATED AT</th>
+                    <th>UPDATED AT</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="note :${notes}">
+                    <td th:text="${note.id}"></td>
+                    <td th:text="${note.title}"></td>
+                    <td th:text="${note.content}"></td>
+                    <td th:text="${note.createdAt}"></td>
+                    <td th:text="${note.updatedAt}"></td>
+                    <td><a th:href="@{delete/{id}(id=${note.id})}" class="btn btn-danger delBtn">Delete</a></td>
+                    <td><a th:href="@{findOne/{id}(id=${note.id})}" class="btn btn-primary eBtn">Edit</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="myForm">
+        <form th:action="@{/save}" method="POST">
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Update or create</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="id" class="col-form-label">ID: </label>
+                                <input type="text" class="form-control" id="id" name="id" value="" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="col-form-label">Title: </label>
+                                <input type="text" class="form-control" id="title" name="title" value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="content" class="col-form-label">Content: </label>
+                                <input type="text" class="form-control" id="content" name="content" value="">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-primary" value="Save"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="alert alert-danger">
+                        Are you sure you want to delete?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="" class="btn btn-danger" id="delRef">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
-
 </html>
