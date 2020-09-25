@@ -3,6 +3,7 @@ package com.example.easynotes.controller;
 import com.example.easynotes.exception.*;
 import com.example.easynotes.model.*;
 import com.example.easynotes.repository.*;
+import java.awt.print.*;
 import java.util.*;
 import javax.validation.*;
 import org.springframework.beans.factory.annotation.*;
@@ -10,32 +11,32 @@ import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;
 import org.springframework.ui.*;
+import org.springframework.util.*;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.*;
 
 @Controller
 public class NoteController {
 
     @Autowired
     NoteRepository noteRepository;
+
     // Get All Notes
-   @GetMapping("/")
-    public String notesList(Model model,@RequestParam(defaultValue = "0") int page ) {
-        model.addAttribute("notes",noteRepository.findAll());
+    @GetMapping ("/")
+    public String notesList (Model model) {
+        model.addAttribute("note", noteRepository.findAll());
         return "index";
     }
 
-    @PostMapping("/save")
-    public String save(Note note){
-       noteRepository.save(note);
-       return "redirect:/";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable (value = "id") long id){
-        Note note = noteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Note", "id", id));
-        noteRepository.delete(note);
-        return "redirect:/";
+    @PostMapping ("/save")
+    @ResponseBody
+    public ResponseEntity createOrEdit(@RequestBody Note note) {
+        try {
+            return ResponseEntity.ok(noteRepository.save(note));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
     }
 
     @GetMapping ("/findOne/{id}")
@@ -45,10 +46,10 @@ public class NoteController {
                 .orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
     }
     // Get All Notes
-//    @GetMapping("/notes")
-//    public List<Note> getAllNotes() {
-//        return noteRepository.findAll();
-//    }
+    @GetMapping("/notes")
+    public ResponseEntity getAllNotes() {
+        return new ResponseEntity(noteRepository.findAll(),HttpStatus.OK);
+    }
 //
 //    @PostMapping ("/notesList")
 //    public Note createNote (@Valid @RequestBody Note note) {
@@ -78,14 +79,14 @@ public class NoteController {
 //    }
 //
 //    // Delete a Note
-//    @DeleteMapping ("/notes/{id}")
-//    public ResponseEntity<?> deleteNote (@PathVariable (value = "id") Long noteId) {
-//        Note note = noteRepository.findById(noteId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
-//
-//        noteRepository.delete(note);
-//
-//        return ResponseEntity.ok().build();
-//    }
+    @DeleteMapping ("/delete/{id}")
+    public ResponseEntity<?> deleteNote (@PathVariable (value = "id") Long noteId) {
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
+
+        noteRepository.delete(note);
+
+        return ResponseEntity.ok().build();
+    }
 
 }

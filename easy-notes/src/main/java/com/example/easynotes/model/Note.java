@@ -2,6 +2,7 @@ package com.example.easynotes.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,38 +11,40 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Entity
-@Table(name = "notes")
-@EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createdAt", "updatedAt"},
+@Table (name = "notes")
+@EntityListeners (AuditingEntityListener.class)
+@JsonIgnoreProperties (value = {"createdAt", "updatedAt"},
         allowGetters = true)
 public class Note implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    //@NotBlank
     private String title;
-
-    @NotBlank
+    //@NotBlank
     private String content;
 
-    @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column (nullable = false, updatable = false)
+    @Temporal (TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column (nullable = false)
+    @Temporal (TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updatedAt;
+
+    private String date;
 
     public Note () {
     }
 
-    public Note(String title,String content){
-        this.title=title;
-        this.content=content;
+    public Note (String title, String content) {
+        this.title = title;
+        this.content = content;
     }
+
     public Long getId () {
         return id;
     }
@@ -80,5 +83,13 @@ public class Note implements Serializable {
 
     public void setUpdatedAt (Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getDate () {
+        return date;
+    }
+
+    public void setDate (String date) {
+        this.date = date;
     }
 }

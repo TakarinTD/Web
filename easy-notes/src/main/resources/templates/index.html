@@ -1,45 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>NOTE</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" th:src="@{/js/bootstrap.min.js}" src="../static/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" th:src="@{/js/main.js}" src="../static/js/main.js"></script>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/js/edit.js}" src="../static/js/edit.js"></script>
+    <script type="text/javascript" th:src="@{/js/new.js}" src="../static/js/new.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <style>
+    h1 {
+      text-align:center;
+    }
+
+    </style>
 </head>
 <body>
 <h1>NOTE</h1>
-<div class="container">
-    <button class="btn btn-success nBtn">New</button>
-    <div class="card">
+<div class="container" >
+    <button class="btn btn-success nBtn">Add New Note</button>
+<!--    <button class="btn btn-danger delBtn">Delete</button>-->
+<!--    <button class="btn btn-primary eBtn">Edit</button>-->
+    <div>
         <div class="card-block">
-            <table class="table table-hover">
+            <table id="tableNote" class="table table-hover table-bordered">
                 <thead>
                 <tr>
                     <th>ID</th>
                     <th>TITLE</th>
                     <th>CONTENT</th>
+                    <th>DATE</th>
                     <th>CREATED AT</th>
                     <th>UPDATED AT</th>
+                    <th>DELETE</th>
+                    <th>EDIT</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="note :${notes}">
-                    <td th:text="${note.id}"></td>
-                    <td th:text="${note.title}"></td>
-                    <td th:text="${note.content}"></td>
-                    <td th:text="${note.createdAt}"></td>
-                    <td th:text="${note.updatedAt}"></td>
-                    <td><a th:href="@{delete/{id}(id=${note.id})}" class="btn btn-danger delBtn">Delete</a></td>
-                    <td><a th:href="@{findOne/{id}(id=${note.id})}" class="btn btn-primary eBtn">Edit</a></td>
+                <tr th:each="note :${note}">
+                    <td th:text="${note.id}" id="idTb"></td>
+                    <td th:text="${note.title}" id="titleTb"></td>
+                    <td th:text="${note.content}" id="contentTb"></td>
+                    <td th:text="${note.date}" id="dateTb"></td>
+                    <td th:text="${note.createdAt}" id="createdAtTb"></td>
+                    <td th:text="${note.updatedAt}" id="updatedAtTb"></td>
+                    <td><a th:href="@{delete/{id}(id=${note.id})}" class="btn btn-danger delBtn">Delete Note</a></td>
+                    <td><a th:href="@{findOne/{id}(id=${note.id})}" class="btn btn-primary eBtn">Edit Note</a></td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
+    <div class="myNew">
+        <form th:action="@{/save}" method="POST" id="noteNewForm">
+            <div class="modal fade" id="myNew" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document" id="dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleNewLabel">Update or create</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="titleNew" class="col-form-label">Title: </label>
+                                <input type="text" class="form-control" id="titleNew" name="title" value="" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contentNew" class="col-form-label">Content: </label>
+                                <input type="text" class="form-control" id="contentNew" name="content" value=""
+                                       required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dateNew" class="col-form-label">Date: </label>
+                                <input type="date" class="form-control" id="dateNew" name="date" value="">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-primary" value="Save" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
     <div class="myForm">
-        <form th:action="@{/save}" method="POST">
+        <form th:action="@{/save}" method="POST" id="noteForm">
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -63,10 +118,14 @@
                                 <label for="content" class="col-form-label">Content: </label>
                                 <input type="text" class="form-control" id="content" name="content" value="">
                             </div>
+                            <div class="form-group">
+                                <label for="date" class="col-form-label">Date: </label>
+                                <input type="date" class="form-control" id="date" name="date" value="">
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <input type="submit" class="btn btn-primary" value="Save"/>
+                            <input type="submit" class="btn btn-primary" id="save" value="Save"/>
                         </div>
                     </div>
                 </div>
@@ -90,11 +149,16 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <a href="" class="btn btn-danger" id="delRef">Delete</a>
+                    <a href="" class="btn btn-danger delNote" id="delRef">Delete</a>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+                $(document).ready(function() {
+                    $('#tableNote').dataTable({});
+                });
+    </script>
 </div>
 </body>
 </html>

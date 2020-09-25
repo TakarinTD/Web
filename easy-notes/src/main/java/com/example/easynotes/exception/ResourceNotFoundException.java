@@ -14,6 +14,13 @@ public class ResourceNotFoundException extends RuntimeException {
         this.resourceName = resourceName;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
+        notFound();
+
+    }
+
+    @GetMapping ("/")
+    public String notFound () {
+        return "error";
     }
 
     public String getResourceName() {
