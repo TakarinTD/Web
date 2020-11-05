@@ -1,4 +1,7 @@
 $(document).ready(function(){
+
+    console.log(/*[[${notes}]]*/);
+
     $('.nBtn').on('click',function(event){
          event.preventDefault();
          var today = new Date();
@@ -7,11 +10,11 @@ $(document).ready(function(){
          var year = today.getFullYear();
 
          if(day < 10) {
-             day = '0'+day;
+             day = '0' + day;
          }
 
          if(month < 10) {
-             month = '0'+month;
+             month = '0' + month;
          }
          today = year + '-' + month + '-' + day;
         $('.myNew #titleNew').val('');
@@ -22,7 +25,7 @@ $(document).ready(function(){
     var hrefDelete;
     $("body").on("click", ".delBtn", function(){
         event.preventDefault();
-        hrefDelete=$(this).attr('href');
+        hrefDelete = $(this).attr('href');
         $('#myModal #delRef').attr('href',hrefDelete);
         $('#myModal').modal();
     });
@@ -30,20 +33,21 @@ $(document).ready(function(){
      $(".delNote").click(function(){
                 event.preventDefault();
                 console.log(hrefDelete);
-                var id='';
-                for(var i=7;i<hrefDelete.length;i++){
-                    id+=hrefDelete[i];
+                var id = '';
+                for(var i = 8; i < hrefDelete.length; i++){
+                    id += hrefDelete[i];
                 }
                 $.ajax({
                     url: hrefDelete,//'delete/'+id,
-                    type: "DELETE",
+                    type: "delete",
                     cache: false,
                     async:false,
                     success: function(data){
                         $('#myModal').modal('hide');
-                        var myRow=$('#tableNote').find('tbody').find('tr');
+
+                        var myRow = $('#tableNote').find('tbody').find('tr');
                         for (var i = 0; i < myRow.length; i++) {
-                            if($(myRow[i]).find('td:eq(0)').html()==id){
+                            if($(myRow[i]).find('td:eq(0)').html() == id){
                                 $(myRow[i]).find('td:eq(0)').html('');
                                 $(myRow[i]).find('td:eq(1)').html('');
                                 $(myRow[i]).find('td:eq(2)').html('');
@@ -55,17 +59,20 @@ $(document).ready(function(){
                                 break;
                             }
                         }
-                        alert('Delete Success');
+                        document.getElementById("idD").innerHTML = "Note " + id + " is deleted";
+                        $('#deleteSuccess').modal();
+
                     },
                     error : function(e) {
-                        alert('Delete Error');
+                        $('#myModal').modal('hide');
+                        $('#errorDelete').modal();
                     }
                 });
             })
 
     $("body").on("click", ".eBtn", function(){
         event.preventDefault();
-        var href=$(this).attr('href');
+        var href = $(this).attr('href');
         $.get(href,function(note,status){
             $('.myForm #id').val(note.id);
             $('.myForm #title').val(note.title);
@@ -74,23 +81,32 @@ $(document).ready(function(){
         });
         $('.myForm #exampleModal').modal();
     });
+
+    $("body").on("click", ".euBtn", function(){
+        event.preventDefault();
+        var href = $(this).attr('href');
+        var status;
+        console.log(href);
+        $.get(href,function(user,status){
+            $('.myUserForm #id').val(user.id);
+            $('.myUserForm #role').val(user.roleName);
+            if(user.status == 1) {
+                status = "1";
+            }
+            else status = "0";
+            $('.myUserForm #active').val(status);
+        });
+        $('.myUserForm #exampleUserModal').modal();
+    });
+    $("body").on("click", ".uiBtn", function(){
+        event.preventDefault();
+        var href = $(this).attr('href');
+        var status;
+        console.log(href);
+        $.get(href,function(user,status){
+            $('.infoForm #fullName').val(user.fullName);
+            $('.infoForm #id').val(user.id);
+        });
+        $('.infoForm #exampleInfoModal').modal();
+    });
 });
-//    function getAllNotes() {
-//        console.log('a')
-//        $.ajax({
-//            url: "notes",
-//            method: "GET",
-//            dataType: "json",
-//            success: function (data) {
-//                console.log(data);
-//                var tableBody = $('#tableNote tbody');
-//                tableBody.empty();
-//                $(data).each(function (index, note) {
-//                    tableBody.append('<tr><td>'+note.id+'</td><td>'+note.title+'</td><td>'+note.content+'</td><td>'+note.date+'</td><td>'+note.createdAt+'</td><td>'+note.updatedAt+'</td><td><a href=\"delete/' + note.id + '\" class=\"btn btn-danger delBtn\" >Delete</a></td><td><a href=\"findOne/' + note.id + '\" class=\"btn btn-primary eBtn\" >Edit</a></tr>');
-//                })
-//            },
-//            error: function (error) {
-//                alert('error');
-//            }
-//        })
-//    }

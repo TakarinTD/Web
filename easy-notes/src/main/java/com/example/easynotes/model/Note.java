@@ -10,12 +10,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
-@Entity
-@Table (name = "notes")
+@Entity (name = "notes")
 @EntityListeners (AuditingEntityListener.class)
 @JsonIgnoreProperties (value = {"createdAt", "updatedAt"},
         allowGetters = true)
 public class Note implements Serializable {
+    @Column (name = "id")
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,6 +36,10 @@ public class Note implements Serializable {
     private Date updatedAt;
 
     private String date;
+
+    @Column (name = "n_users_id")
+    private Long nUsers;
+
 
     public Note () {
     }
@@ -91,5 +95,13 @@ public class Note implements Serializable {
 
     public void setDate (String date) {
         this.date = date;
+    }
+
+    public Long getNUsers () {
+        return nUsers;
+    }
+
+    public void setNUsers (Long nUsers) {
+        this.nUsers = nUsers;
     }
 }

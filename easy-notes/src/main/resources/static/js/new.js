@@ -2,6 +2,8 @@ $(document).ready(
 		function() {
 			$("#noteNewForm").submit(function(event) {
 				event.preventDefault();
+				action = $(this).attr('action');
+				console.log(action);
 				add();
 			});
 
@@ -16,7 +18,7 @@ $(document).ready(
 				$.ajax({
 					type : "POST",
 					contentType : "application/json",
-					url : "save",
+					url : action,
 					data : JSON.stringify(formData),
 					dataType : 'json',
 					success : function(result) {
@@ -74,15 +76,33 @@ $(document).ready(
 						        result.date,
 						        created,
 						        updated,
-						        "<a href=\"delete/" + result.id + "\" class=\"btn btn-danger delBtn\" >Delete</a>",
-						        "<a href=\"findOne/" + result.id + "\" class=\"btn btn-primary eBtn\" >Edit</a>"
+						        "<a href=\"/delete/" + result.id + "\" class=\"btn btn-danger delBtn\" >Delete Note</a>",
+						        "<a href=\"/findOne/" + result.id + "\" class=\"btn btn-primary eBtn\" >Edit Note</a>"
 						    ]).draw( false );
-							alert("Add Success!");
-						console.log(result.data);
+							var today = new Date();
+                            var day = today.getDate();
+                            var month = today.getMonth()+1;
+                            var year = today.getFullYear();
+
+                            if(day < 10) {
+                                day = '0' + day;
+                            }
+                            if(month < 10) {
+                                month = '0' + month;
+                            }
+                            today = year + '-' + month + '-' + day;
+                            $('.myNew #titleNew').val('');
+                            $('.myNew #contentNew').val('');
+                            $('.myNew #dateNew').val(today);
+                            $('.myNew #myNew').modal();
+
+                            document.getElementById("titleN").innerHTML = "- Title: " + result.title;
+                            document.getElementById("contentN").innerHTML = "- Content: " + result.content;
+                            document.getElementById("dateN").innerHTML = "- Date: " + result.date;
+                            $('#newSuccess').modal();
 					},
 					error : function(e) {
-						alert("Add Error!")
-						console.log("ERROR: ", e);
+						$('#errorNew').modal();
 					}
 				});
 			}

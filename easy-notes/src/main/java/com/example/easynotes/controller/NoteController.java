@@ -14,24 +14,46 @@ import org.springframework.ui.*;
 import org.springframework.util.*;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.*;
+
 
 @Controller
 public class NoteController {
 
     @Autowired
     NoteRepository noteRepository;
+    @Autowired
+    UserRepository userRepository;
 
     // Get All Notes
-    @GetMapping ("/")
+    @GetMapping ("/index")
     public String notesList (Model model) {
-        model.addAttribute("note", noteRepository.findAll());
-        return "index";
+        System.out.println("user");
+        model.addAttribute("notes", noteRepository.findAll());
+        return "/index";
     }
 
-    @PostMapping ("/save")
+    @PostMapping ("/save/{id}")
     @ResponseBody
-    public ResponseEntity createOrEdit(@RequestBody Note note) {
+    public ResponseEntity create (@RequestBody Note note, @PathVariable (value = "id") Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        note.setNUsers(userId);
+        System.out.println(user.getRoles().getClass());
+        if (note.getContent().equals("") || note.getTitle().equals("")) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        } else {
+            try {
+                return ResponseEntity.ok(noteRepository.save(note));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+            }
+        }
+    }
+
+    @PostMapping ("/edit/{id}")
+    @ResponseBody
+    public ResponseEntity edit (@RequestBody Note note, @PathVariable (value = "id") Long userId) {
+        note.setNUsers(userId);
         try {
             return ResponseEntity.ok(noteRepository.save(note));
         } catch (Exception e) {
@@ -45,12 +67,17 @@ public class NoteController {
         return noteRepository.findById(noteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
     }
+
     // Get All Notes
-    @GetMapping("/notes")
-    public ResponseEntity getAllNotes() {
-        return new ResponseEntity(noteRepository.findAll(),HttpStatus.OK);
+    @GetMapping ("/index/{id}")
+    public String notesUserList (Model model, @PathVariable (value = "id") Long userId) {
+        model.addAttribute("userId", userId);
+        model.addAttribute("role", userRepository.findUserRole(userId));
+        model.addAttribute("notes", noteRepository.getListNote(userId));
+        return "/index";
     }
-//
+
+    //
 //    @PostMapping ("/notesList")
 //    public Note createNote (@Valid @RequestBody Note note) {
 //        return noteRepository.save(note);
@@ -83,10 +110,15 @@ public class NoteController {
     public ResponseEntity<?> deleteNote (@PathVariable (value = "id") Long noteId) {
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
-
         noteRepository.delete(note);
-
         return ResponseEntity.ok().build();
     }
+//    @GetMapping ("/delete/{id}")
+//    public ResponseEntity<?> deleteNoteGet (@PathVariable (value = "id") Long noteId) {
+//        Note note = noteRepository.findById(noteId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Note", "id", noteId));
+//        noteRepository.delete(note);
+//        return ResponseEntity.ok().build();
+//    }
 
 }

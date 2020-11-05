@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/main.js}" src="../static/js/main.js"></script>
+    <script type="text/javascript" th:src="@{/js/updateInfo.js}" src="../static/js/editNote.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <title>Home page note</title>
+    <style>
+        body{
+	        background-image: linear-gradient(to right, #5a83f4, #aa00ff);
+        }
+        h2{
+            font-size: 20px;
+            text-align: center;
+            color: black;
+        }
+        .container{
+            width: 400px;
+            height: auto;
+            background-color: #fffff0;
+            border-radius: 30px;
+            padding: 0px 50px;
+            margin: 0 auto;
+            margin-top: 100px;
+            padding-top: 10px;
+            padding-bottom: 50px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome to <span th:utext="${user.fullName}" id="s1"></span>!</h2>
+    <p>Please, select a options!</p>
+    <a th:href="@{/index/{id}(id=${user.id})}" class="btn btn-primary">View note</a><br>
+    <br><a th:href="@{/findUser/{id}(id=${user.id})}" class="btn btn-primary uiBtn">Update information</a>
+    <br>
+    <br><a th:href="@{/findUser/{id}(id=${user.id})}" class="btn btn-primary cpBtn">Change password</a>
+    <br>
+    <div th:if="${role == 'admin'}">
+        <br><button class="btn btn-primary aBtn" onclick="document.location='admin'">Admin</button>
+    </div>
+    <br><a th:href="@{/logout}" class="btn btn-light">Logout</a>
+    <div class="infoForm">
+        <form th:action="@{/editInfo}" method="POST" id="userInfoForm">
+            <div class="modal fade" id="exampleInfoModal" tabindex="-1" role="dialog"
+                 aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Update role and status active!</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="id" class="col-form-label">ID: </label>
+                                <input type="text" class="form-control" id="id" name="id" value="" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="fullName" class="col-form-label">Full name: </label>
+                                <input type="text" class="form-control" id="fullName" name="fullName" value="">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-primary" id="save" value="Save"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
